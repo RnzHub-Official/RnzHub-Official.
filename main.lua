@@ -1,152 +1,188 @@
--- [[ RNZ HUB OFFICIAL : DUCK TEAM CORPORATION ]]
--- OWNER: byDuck! | VERSION: 1.4.0 (NOTA 10 VERSION)
--- REPO: RnzHub-Official. | ID: 120057461494992
+-- [[ RNZ HUB OFFICIAL : ULTIMATE CINEMATIC EDITION ]]
+-- VERSION: v1.0.2 🔐 | BYDUCK CORPORATION
+-- ID: 120057461494992
 
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
-local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local Camera = Workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
 
--- LIMPEZA DE UI
-if CoreGui:FindFirstChild("RnzHub_Final") then CoreGui:FindFirstChild("RnzHub_Final"):Destroy() end
+-- [[ 🎬 1. CUTSCENE: PERSONAGEM ZERANDO O JOGO ]]
+local function PlayMasterCutscene()
+    local IntroGui = Instance.new("ScreenGui", CoreGui)
+    local Blackout = Instance.new("Frame", IntroGui)
+    Blackout.Size = UDim2.new(1, 0, 1, 0)
+    Blackout.BackgroundColor3 = Color3.new(0, 0, 0)
+    Blackout.ZIndex = 100
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "RnzHub_Final"
-ScreenGui.Parent = CoreGui
+    local StatusText = Instance.new("TextLabel", IntroGui)
+    StatusText.Size = UDim2.new(1, 0, 1, 0)
+    StatusText.BackgroundTransparency = 1
+    StatusText.Text = "Rnz Corporation Apresenta..."
+    StatusText.TextColor3 = Color3.fromRGB(0, 255, 150)
+    StatusText.Font = Enum.Font.GothamBold
+    StatusText.TextSize = 40
+    StatusText.ZIndex = 101
+    StatusText.TextTransparency = 1
 
--- MAIN FRAME (DESIGN TRANSPARENTE DA FOTO)
-local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 600, 0, 400)
-Main.Position = UDim2.new(0.5, -300, 0.5, -200)
-Main.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-Main.BackgroundTransparency = 0.2
-Main.Parent = ScreenGui
-Instance.new("UICorner", Main)
-
--- SEU NOVO ID DO CHROME NO FUNDO
-local BgImg = Instance.new("ImageLabel")
-BgImg.Size = UDim2.new(1, 0, 1, 0)
-BgImg.Image = "rbxassetid://120057461494992"
-BgImg.ImageTransparency = 0.8
-BgImg.BackgroundTransparency = 1
-BgImg.Parent = Main
-Instance.new("UICorner", BgImg)
-
--- BARRA LATERAL (ESTILO SZTEST123)
-local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 160, 1, 0)
-Sidebar.BackgroundTransparency = 1
-Sidebar.Parent = Main
-local Layout = Instance.new("UIListLayout", Sidebar)
-Layout.Padding = UDim.new(0, 5)
-Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
--- LINHA NEON VERDE
-local NeonLine = Instance.new("Frame")
-NeonLine.Size = UDim2.new(0, 2, 0, 340)
-NeonLine.Position = UDim2.new(0, 165, 0, 20)
-NeonLine.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
-NeonLine.BorderSizePixel = 0
-NeonLine.Parent = Main
-
-local PageContainer = Instance.new("Frame")
-PageContainer.Position = UDim2.new(0, 180, 0, 50)
-PageContainer.Size = UDim2.new(1, -190, 1, -60)
-PageContainer.BackgroundTransparency = 1
-PageContainer.Parent = Main
-
--- [[ SISTEMA DE ABAS PROFISSIONAL ]]
-local function AddTab(name, icon)
-    local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0.9, 0, 0, 38)
-    Btn.Text = icon .. " " .. name
-    Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    Btn.TextColor3 = Color3.new(1, 1, 1)
-    Btn.Font = Enum.Font.GothamBold
-    Btn.Parent = Sidebar
-    Instance.new("UICorner", Btn)
-
-    local Page = Instance.new("ScrollingFrame")
-    Page.Size = UDim2.new(1, 0, 1, 0)
-    Page.Visible = false
-    Page.BackgroundTransparency = 1
-    Page.ScrollBarThickness = 2
-    Page.Parent = PageContainer
-    Instance.new("UIListLayout", Page).Padding = UDim.new(0, 8)
-
-    Btn.MouseButton1Click:Connect(function()
-        for _, v in pairs(PageContainer:GetChildren()) do v.Visible = false end
-        Page.Visible = true
-    end)
-    return Page
-end
-
--- [[ CRIANDO AS ABAS DA SUA LISTA ]]
-local MainTab = AddTab("Main", "🏠")
-local CombatTab = AddTab("Combat", "⚔️")
-local BringTab = AddTab("Bring Items", "🍎")
-local TeleportTab = AddTab("Teleport", "📍")
-
--- [[ FUNÇÃO REAL: KILL AURA NA ABA COMBAT ]]
-local KA_Toggle = false
-local KABtn = Instance.new("TextButton")
-KABtn.Size = UDim2.new(1, 0, 0, 40)
-KABtn.Text = "Kill Aura: OFF"
-KABtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-KABtn.Parent = CombatTab
-Instance.new("UICorner", KABtn)
-
-KABtn.MouseButton1Click:Connect(function()
-    KA_Toggle = not KA_Toggle
-    KABtn.Text = KA_Toggle and "Kill Aura: ON" or "Kill Aura: OFF"
-    KABtn.BackgroundColor3 = KA_Toggle and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(200, 50, 50)
-end)
-
--- [[ FUNÇÃO REAL: BRING ITEMS (SÓ OS QUE VOCÊ MANDOU) ]]
-local function AddBringButton(itemName)
-    local B = Instance.new("TextButton")
-    B.Size = UDim2.new(1, 0, 0, 35)
-    B.Text = "Puxar: " .. itemName
-    B.BackgroundColor3 = Color3.fromRGB(40, 45, 60)
-    B.TextColor3 = Color3.new(1,1,1)
-    B.Parent = BringTab
-    Instance.new("UICorner", B)
-    
-    B.MouseButton1Click:Connect(function()
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v.Name == itemName and v:IsA("BasePart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
-                break
-            end
-        end
+    -- Início da Intro
+    task.spawn(function()
+        TweenService:Create(StatusText, TweenInfo.new(1), {TextTransparency = 0}):Play()
+        task.wait(2)
+        TweenService:Create(StatusText, TweenInfo.new(1), {TextTransparency = 1}):Play()
+        task.wait(0.5)
+        StatusText.Text = "ZERANDO O JOGO..."
+        TweenService:Create(StatusText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+        task.wait(1.5)
+        TweenService:Create(StatusText, TweenInfo.new(1), {TextTransparency = 1}):Play()
+        TweenService:Create(Blackout, TweenInfo.new(2), {BackgroundTransparency = 1}):Play()
+        task.wait(2)
+        IntroGui:Destroy()
     end)
 end
 
--- Adicionando itens da sua lista
-AddBringButton("Ice Axe")
-AddBringButton("Wood Scrap")
-AddBringButton("Iron Scrap")
-AddBringButton("Raygun")
+-- [[ 🛠️ 2. MOTOR DO HUB PRINCIPAL ]]
+local function LoadRnzHub()
+    -- BOLA FLUTUANTE (DESIGN GAMER)
+    local ToggleUI = Instance.new("ScreenGui", CoreGui)
+    local FloatingBtn = Instance.new("ImageButton", ToggleUI)
+    FloatingBtn.Size = UDim2.new(0, 55, 0, 55)
+    FloatingBtn.Position = UDim2.new(0, 20, 0.5, -27)
+    FloatingBtn.Image = "rbxassetid://120057461494992"
+    FloatingBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+    Instance.new("UICorner", FloatingBtn).CornerRadius = UDim.new(1, 0)
 
--- PERFIL DO USUÁRIO (O SEU NOME!)
-local Profile = Instance.new("Frame")
-Profile.Position = UDim2.new(0, 10, 1, -65)
-Profile.Size = UDim2.new(0, 140, 0, 55)
-Profile.BackgroundTransparency = 1
-Profile.Parent = Main
+    -- MENU PRINCIPAL
+    local MainGui = Instance.new("ScreenGui", CoreGui)
+    local Main = Instance.new("Frame", MainGui)
+    Main.Size = UDim2.new(0, 650, 0, 420)
+    Main.Position = UDim2.new(-1, 0, 0.5, -210) -- Escondido para animação < >
+    Main.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+    Main.BackgroundTransparency = 0.1
+    Instance.new("UICorner", Main)
 
-local Av = Instance.new("ImageLabel")
-Av.Size = UDim2.new(0, 45, 0, 45)
-Av.Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=420&height=420&format=png"
-Av.Parent = Profile
-Instance.new("UICorner", Av).CornerRadius = UDim.new(1, 0)
+    -- SIDEBAR COM ROLAGEM (ORGANIZAÇÃO)
+    local Sidebar = Instance.new("ScrollingFrame", Main)
+    Sidebar.Size = UDim2.new(0, 170, 1, -20)
+    Sidebar.Position = UDim2.new(0, 8, 0, 10)
+    Sidebar.BackgroundTransparency = 1
+    Sidebar.ScrollBarThickness = 0
+    local Layout = Instance.new("UIListLayout", Sidebar)
+    Layout.Padding = UDim.new(0, 5)
 
-local Name = Instance.new("TextLabel")
-Name.Text = LocalPlayer.Name
-Name.Position = UDim2.new(0, 55, 0, 10)
-Name.TextColor3 = Color3.new(1, 1, 1)
-Name.Font = Enum.Font.GothamBold
-Name.BackgroundTransparency = 1
-Name.Parent = Profile
+    -- CONTAINER DE CONTEÚDO
+    local Container = Instance.new("Frame", Main)
+    Container.Size = UDim2.new(1, -195, 1, -65)
+    Container.Position = UDim2.new(0, 185, 0, 55)
+    Container.BackgroundTransparency = 1
 
-print("RNZ HUB: NOTA 10 CARREGADO! 👾")
+    -- BARRA DE ANÚNCIOS (INFO)
+    local AdLabel = Instance.new("TextLabel", Main)
+    AdLabel.Size = UDim2.new(0, 400, 0, 30)
+    AdLabel.Position = UDim2.new(0, 185, 0, 15)
+    AdLabel.Text = "Bem vindo a nosso hub! 👀 | Premium v1.0.2 🔐"
+    AdLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+    AdLabel.Font = Enum.Font.GothamBold
+    AdLabel.BackgroundTransparency = 1
+    AdLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- FUNÇÃO PARA CRIAR ABAS
+    local function AddTab(name)
+        local B = Instance.new("TextButton", Sidebar)
+        B.Size = UDim2.new(1, 0, 0, 38)
+        B.Text = "  " .. name
+        B.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        B.TextColor3 = Color3.new(1,1,1)
+        B.Font = Enum.Font.GothamMedium
+        B.TextXAlignment = Enum.TextXAlignment.Left
+        Instance.new("UICorner", B)
+
+        local P = Instance.new("ScrollingFrame", Container)
+        P.Size = UDim2.new(1, 0, 1, 0)
+        P.Visible = false
+        P.BackgroundTransparency = 1
+        P.ScrollBarThickness = 2
+        Instance.new("UIListLayout", P).Padding = UDim.new(0, 8)
+
+        B.MouseButton1Click:Connect(function()
+            for _, v in pairs(Container:GetChildren()) do v.Visible = false end
+            P.Visible = true
+        end)
+        return P
+    end
+
+    -- FUNÇÃO PARA TOGGLES (ESTILO VOIDWARE)
+    local function AddToggle(parent, text, callback)
+        local TFrame = Instance.new("Frame", parent)
+        TFrame.Size = UDim2.new(1, -10, 0, 45)
+        TFrame.BackgroundTransparency = 0.9
+        TFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        Instance.new("UICorner", TFrame)
+
+        local Lbl = Instance.new("TextLabel", TFrame)
+        Lbl.Size = UDim2.new(0.7, 0, 1, 0)
+        Lbl.Position = UDim2.new(0, 10, 0, 0)
+        Lbl.Text = text
+        Lbl.TextColor3 = Color3.new(1,1,1)
+        Lbl.Font = Enum.Font.Gotham
+        Lbl.TextXAlignment = Enum.TextXAlignment.Left
+        Lbl.BackgroundTransparency = 1
+
+        local Swit = Instance.new("TextButton", TFrame)
+        Swit.Size = UDim2.new(0, 42, 0, 20)
+        Swit.Position = UDim2.new(1, -50, 0.5, -10)
+        Swit.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+        Swit.Text = ""
+        Instance.new("UICorner", Swit).CornerRadius = UDim.new(1, 0)
+
+        local Ball = Instance.new("Frame", Swit)
+        Ball.Size = UDim2.new(0, 16, 0, 16)
+        Ball.Position = UDim2.new(0, 2, 0.5, -8)
+        Ball.BackgroundColor3 = Color3.new(1,1,1)
+        Instance.new("UICorner", Ball).CornerRadius = UDim.new(1,0)
+
+        local active = false
+        Swit.MouseButton1Click:Connect(function()
+            active = not active
+            local p = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+            local c = active and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(60, 60, 70)
+            TweenService:Create(Ball, TweenInfo.new(0.2), {Position = p}):Play()
+            TweenService:Create(Swit, TweenInfo.new(0.2), {BackgroundColor3 = c}):Play()
+            callback(active)
+        end)
+    end
+
+    -- [[ 📂 DEFINIÇÃO DAS 10 ABAS ]]
+    local TabInfo      = AddTab("Information")
+    local TabMain      = AddTab("Main")
+    local TabBring     = AddTab("Bring Stuff")
+    local TabTeleport  = AddTab("Teleport")
+    local TabAutoFarm  = AddTab("Auto Farm")
+    local TabFarmDays  = AddTab("Farm Days")
+    local TabStrong    = AddTab("Auto Stronghold")
+    local TabPlayer    = AddTab("Player")
+    local TabVision    = AddTab("Vision")
+    local TabAntiLag   = AddTab("Ant Lag")
+
+    -- [[ 🚀 EXEMPLOS DE FUNÇÕES ]]
+    AddToggle(TabMain, "Kill Aura", function(state) print("Kill Aura:", state) end)
+    AddToggle(TabMain, "Chop All Trees", function(state) print("Chop:", state) end)
+    AddToggle(TabPlayer, "Auto Saplings (inf)", function(state) print("Saplings:", state) end)
+    AddToggle(TabTeleport, "Teleport to LostChilds", function(state) print("TP Kids:", state) end)
+
+    -- LÓGICA DE ABRIR/FECHAR MENU (ANIMAÇÃO LATERAL)
+    local isOpen = false
+    FloatingBtn.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        local target = isOpen and UDim2.new(0, 85, 0.5, -210) or UDim2.new(-1, 0, 0.5, -210)
+        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = target}):Play()
+    end)
+end
+
+-- [[ EXECUÇÃO FINAL ]]
+task.spawn(PlayMasterCutscene)
+task.delay(6, LoadRnzHub)
+
+print("Rnz Corporation: Ultimate Script Loaded! 🎬")
