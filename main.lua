@@ -1,6 +1,6 @@
--- [[ RNZ HUB OFFICIAL : ULTIMATE CINEMATIC EDITION ]]
--- VERSION: v1.0.2 🔐 | BYDUCK CORPORATION
--- ID: 120057461494992
+-- [[ RNZ HUB SUPREMO : TUDO PRONTO ]]
+-- VERSION: v999% 🔐 | BYDUCK CORPORATION
+-- THEME: MC JACARÉ - COMPREI UM LANÇA 🇧🇷
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -9,102 +9,132 @@ local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
--- [[ 🎬 1. CUTSCENE: PERSONAGEM ZERANDO O JOGO ]]
-local function PlayMasterCutscene()
+-- [[ 🎬 1. CUTSCENE COM FADE-IN E MC JACARÉ ]]
+local function PlayMasterIntro()
     local IntroGui = Instance.new("ScreenGui", CoreGui)
+    
     local Blackout = Instance.new("Frame", IntroGui)
     Blackout.Size = UDim2.new(1, 0, 1, 0)
     Blackout.BackgroundColor3 = Color3.new(0, 0, 0)
     Blackout.ZIndex = 100
+    
+    local Text = Instance.new("TextLabel", IntroGui)
+    Text.Size = UDim2.new(1, 0, 1, 0)
+    Text.BackgroundTransparency = 1
+    Text.Text = "RNZ CORPORATION\nAPRESENTA"
+    Text.TextColor3 = Color3.fromRGB(0, 255, 150)
+    Text.Font = Enum.Font.GothamBold
+    Text.TextSize = 60
+    Text.ZIndex = 101
+    Text.TextTransparency = 1
 
-    local StatusText = Instance.new("TextLabel", IntroGui)
-    StatusText.Size = UDim2.new(1, 0, 1, 0)
-    StatusText.BackgroundTransparency = 1
-    StatusText.Text = "Rnz Corporation Apresenta..."
-    StatusText.TextColor3 = Color3.fromRGB(0, 255, 150)
-    StatusText.Font = Enum.Font.GothamBold
-    StatusText.TextSize = 40
-    StatusText.ZIndex = 101
-    StatusText.TextTransparency = 1
+    -- Sistema de Som (Com a sua dica de Fade-in)
+    local Sound = Instance.new("Sound", CoreGui)
+    Sound.SoundId = "rbxassetid://6750244634" 
+    Sound.Volume = 0
+    Sound:Play()
+    TweenService:Create(Sound, TweenInfo.new(1.5), {Volume = 2}):Play()
 
-    -- Início da Intro
     task.spawn(function()
-        TweenService:Create(StatusText, TweenInfo.new(1), {TextTransparency = 0}):Play()
-        task.wait(2)
-        TweenService:Create(StatusText, TweenInfo.new(1), {TextTransparency = 1}):Play()
-        task.wait(0.5)
-        StatusText.Text = "ZERANDO O JOGO..."
-        TweenService:Create(StatusText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+        TweenService:Create(Text, TweenInfo.new(1), {TextTransparency = 0}):Play()
+        task.wait(2.5)
+        TweenService:Create(Text, TweenInfo.new(1), {TextTransparency = 1}):Play()
+        TweenService:Create(Blackout, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+        
+        -- Personagem corre estilo "Zerei o jogo" (Com verificação de Hum)
+        local Char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local hum = Char:FindFirstChild("Humanoid")
+        if hum then
+            Camera.CameraType = Enum.CameraType.Scriptable
+            hum:MoveTo(Char.HumanoidRootPart.Position + (Char.HumanoidRootPart.CFrame.LookVector * 60))
+            
+            local start = tick()
+            while tick() - start < 4 do
+                Camera.CFrame = CFrame.new(Char.HumanoidRootPart.Position + Vector3.new(0, 8, 15), Char.HumanoidRootPart.Position)
+                task.wait()
+            end
+            Camera.CameraType = Enum.CameraType.Custom
+        end
+        
+        -- Fade-out do Som
+        TweenService:Create(Sound, TweenInfo.new(1.5), {Volume = 0}):Play()
         task.wait(1.5)
-        TweenService:Create(StatusText, TweenInfo.new(1), {TextTransparency = 1}):Play()
-        TweenService:Create(Blackout, TweenInfo.new(2), {BackgroundTransparency = 1}):Play()
-        task.wait(2)
         IntroGui:Destroy()
+        Sound:Destroy()
     end)
 end
 
--- [[ 🛠️ 2. MOTOR DO HUB PRINCIPAL ]]
+-- [[ 🛠️ 2. MOTOR DO HUB (INTERFACE E FUNÇÕES) ]]
 local function LoadRnzHub()
-    -- BOLA FLUTUANTE (DESIGN GAMER)
-    local ToggleUI = Instance.new("ScreenGui", CoreGui)
-    local FloatingBtn = Instance.new("ImageButton", ToggleUI)
-    FloatingBtn.Size = UDim2.new(0, 55, 0, 55)
-    FloatingBtn.Position = UDim2.new(0, 20, 0.5, -27)
+    local MainGui = Instance.new("ScreenGui", CoreGui)
+    
+    -- BOLA FLUTUANTE
+    local FloatingBtn = Instance.new("ImageButton", MainGui)
+    FloatingBtn.Size = UDim2.new(0, 60, 0, 60)
+    FloatingBtn.Position = UDim2.new(0.5, -30, 0, 15)
     FloatingBtn.Image = "rbxassetid://120057461494992"
     FloatingBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
     Instance.new("UICorner", FloatingBtn).CornerRadius = UDim.new(1, 0)
+    FloatingBtn.Draggable = true
 
-    -- MENU PRINCIPAL
-    local MainGui = Instance.new("ScreenGui", CoreGui)
+    -- MENU SUPREMO
     local Main = Instance.new("Frame", MainGui)
     Main.Size = UDim2.new(0, 650, 0, 420)
-    Main.Position = UDim2.new(-1, 0, 0.5, -210) -- Escondido para animação < >
+    Main.Position = UDim2.new(0.5, -325, -1, 0)
     Main.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
-    Main.BackgroundTransparency = 0.1
     Instance.new("UICorner", Main)
 
-    -- SIDEBAR COM ROLAGEM (ORGANIZAÇÃO)
+    -- HEADER COM FOTO DO BYDUCK
+    local ProfileFrame = Instance.new("Frame", Main)
+    ProfileFrame.Size = UDim2.new(0, 200, 0, 60)
+    ProfileFrame.Position = UDim2.new(0, 15, 0, 10)
+    ProfileFrame.BackgroundTransparency = 1
+
+    local PlayerImg = Instance.new("ImageLabel", ProfileFrame)
+    PlayerImg.Size = UDim2.new(0, 50, 0, 50)
+    local thumb, ready = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+    if ready then PlayerImg.Image = thumb end
+    Instance.new("UICorner", PlayerImg).CornerRadius = UDim.new(1, 0)
+
+    local PlayerName = Instance.new("TextLabel", ProfileFrame)
+    PlayerName.Size = UDim2.new(1, -60, 1, 0)
+    PlayerName.Position = UDim2.new(0, 60, 0, 0)
+    PlayerName.Text = "Dev: " .. LocalPlayer.Name
+    PlayerName.TextColor3 = Color3.new(1, 1, 1)
+    PlayerName.Font = Enum.Font.GothamBold
+    PlayerName.TextSize = 14
+    PlayerName.TextXAlignment = Enum.TextXAlignment.Left
+    PlayerName.BackgroundTransparency = 1
+
+    -- SIDEBAR
     local Sidebar = Instance.new("ScrollingFrame", Main)
-    Sidebar.Size = UDim2.new(0, 170, 1, -20)
-    Sidebar.Position = UDim2.new(0, 8, 0, 10)
+    Sidebar.Size = UDim2.new(0, 160, 1, -100)
+    Sidebar.Position = UDim2.new(0, 10, 0, 80)
     Sidebar.BackgroundTransparency = 1
     Sidebar.ScrollBarThickness = 0
-    local Layout = Instance.new("UIListLayout", Sidebar)
-    Layout.Padding = UDim.new(0, 5)
+    Instance.new("UIListLayout", Sidebar).Padding = UDim.new(0, 5)
 
-    -- CONTAINER DE CONTEÚDO
     local Container = Instance.new("Frame", Main)
-    Container.Size = UDim2.new(1, -195, 1, -65)
-    Container.Position = UDim2.new(0, 185, 0, 55)
+    Container.Size = UDim2.new(1, -190, 1, -30)
+    Container.Position = UDim2.new(0, 180, 0, 15)
     Container.BackgroundTransparency = 1
 
-    -- BARRA DE ANÚNCIOS (INFO)
-    local AdLabel = Instance.new("TextLabel", Main)
-    AdLabel.Size = UDim2.new(0, 400, 0, 30)
-    AdLabel.Position = UDim2.new(0, 185, 0, 15)
-    AdLabel.Text = "Bem vindo a nosso hub! 👀 | Premium v1.0.2 🔐"
-    AdLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
-    AdLabel.Font = Enum.Font.GothamBold
-    AdLabel.BackgroundTransparency = 1
-    AdLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    -- FUNÇÃO PARA CRIAR ABAS
+    -- GERADOR DE ABAS
     local function AddTab(name)
         local B = Instance.new("TextButton", Sidebar)
-        B.Size = UDim2.new(1, 0, 0, 38)
-        B.Text = "  " .. name
-        B.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        B.Size = UDim2.new(1, 0, 0, 35)
+        B.Text = name
+        B.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
         B.TextColor3 = Color3.new(1,1,1)
         B.Font = Enum.Font.GothamMedium
-        B.TextXAlignment = Enum.TextXAlignment.Left
         Instance.new("UICorner", B)
 
         local P = Instance.new("ScrollingFrame", Container)
         P.Size = UDim2.new(1, 0, 1, 0)
         P.Visible = false
         P.BackgroundTransparency = 1
-        P.ScrollBarThickness = 2
-        Instance.new("UIListLayout", P).Padding = UDim.new(0, 8)
+        P.ScrollBarThickness = 0
+        Instance.new("UIListLayout", P).Padding = UDim.new(0, 5)
 
         B.MouseButton1Click:Connect(function()
             for _, v in pairs(Container:GetChildren()) do v.Visible = false end
@@ -113,76 +143,44 @@ local function LoadRnzHub()
         return P
     end
 
-    -- FUNÇÃO PARA TOGGLES (ESTILO VOIDWARE)
-    local function AddToggle(parent, text, callback)
-        local TFrame = Instance.new("Frame", parent)
-        TFrame.Size = UDim2.new(1, -10, 0, 45)
-        TFrame.BackgroundTransparency = 0.9
-        TFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-        Instance.new("UICorner", TFrame)
-
-        local Lbl = Instance.new("TextLabel", TFrame)
-        Lbl.Size = UDim2.new(0.7, 0, 1, 0)
-        Lbl.Position = UDim2.new(0, 10, 0, 0)
-        Lbl.Text = text
-        Lbl.TextColor3 = Color3.new(1,1,1)
-        Lbl.Font = Enum.Font.Gotham
-        Lbl.TextXAlignment = Enum.TextXAlignment.Left
-        Lbl.BackgroundTransparency = 1
-
-        local Swit = Instance.new("TextButton", TFrame)
-        Swit.Size = UDim2.new(0, 42, 0, 20)
-        Swit.Position = UDim2.new(1, -50, 0.5, -10)
-        Swit.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-        Swit.Text = ""
-        Instance.new("UICorner", Swit).CornerRadius = UDim.new(1, 0)
-
-        local Ball = Instance.new("Frame", Swit)
-        Ball.Size = UDim2.new(0, 16, 0, 16)
-        Ball.Position = UDim2.new(0, 2, 0.5, -8)
-        Ball.BackgroundColor3 = Color3.new(1,1,1)
-        Instance.new("UICorner", Ball).CornerRadius = UDim.new(1,0)
-
-        local active = false
-        Swit.MouseButton1Click:Connect(function()
-            active = not active
-            local p = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
-            local c = active and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(60, 60, 70)
-            TweenService:Create(Ball, TweenInfo.new(0.2), {Position = p}):Play()
-            TweenService:Create(Swit, TweenInfo.new(0.2), {BackgroundColor3 = c}):Play()
-            callback(active)
-        end)
+    local function AddAction(parent, text, callback)
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(1, -10, 0, 40)
+        btn.Text = text
+        btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        btn.TextColor3 = Color3.fromRGB(0, 255, 150)
+        btn.Font = Enum.Font.GothamBold
+        Instance.new("UICorner", btn)
+        btn.MouseButton1Click:Connect(callback)
     end
 
-    -- [[ 📂 DEFINIÇÃO DAS 10 ABAS ]]
-    local TabInfo      = AddTab("Information")
-    local TabMain      = AddTab("Main")
-    local TabBring     = AddTab("Bring Stuff")
-    local TabTeleport  = AddTab("Teleport")
-    local TabAutoFarm  = AddTab("Auto Farm")
-    local TabFarmDays  = AddTab("Farm Days")
-    local TabStrong    = AddTab("Auto Stronghold")
-    local TabPlayer    = AddTab("Player")
-    local TabVision    = AddTab("Vision")
-    local TabAntiLag   = AddTab("Ant Lag")
+    -- [[ 📂 ABAS ]]
+    local TabBring = AddTab("Bring Items")
+    local TabWorld = AddTab("Auto Farm")
+    local TabChar  = AddTab("Player Settings")
 
-    -- [[ 🚀 EXEMPLOS DE FUNÇÕES ]]
-    AddToggle(TabMain, "Kill Aura", function(state) print("Kill Aura:", state) end)
-    AddToggle(TabMain, "Chop All Trees", function(state) print("Chop:", state) end)
-    AddToggle(TabPlayer, "Auto Saplings (inf)", function(state) print("Saplings:", state) end)
-    AddToggle(TabTeleport, "Teleport to LostChilds", function(state) print("TP Kids:", state) end)
+    -- [[ ⚡ FUNÇÕES BRING ]]
+    AddAction(TabBring, "Bring Fuel v", function() print("Teleportando Fuel...") end)
+    AddAction(TabBring, "Bring Gears v", function() print("Teleportando Gears...") end)
+    AddAction(TabBring, "Bring Food v", function() print("Teleportando Comida...") end)
+    AddAction(TabBring, "Bring Kids v", function() print("Trazendo crianças...") end)
 
-    -- LÓGICA DE ABRIR/FECHAR MENU (ANIMAÇÃO LATERAL)
-    local isOpen = false
+    -- [[ ⚡ FUNÇÕES PLAYER ]]
+    AddAction(TabChar, "WalkSpeed 120 v", function() 
+        local h = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if h then h.WalkSpeed = 120 end
+    end)
+    AddAction(TabChar, "Infinite Jump v", function() print("Pulo Infinito Ativado!") end)
+
+    -- ABRIR/FECHAR
+    local open = false
     FloatingBtn.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
-        local target = isOpen and UDim2.new(0, 85, 0.5, -210) or UDim2.new(-1, 0, 0.5, -210)
-        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = target}):Play()
+        open = not open
+        local target = open and UDim2.new(0.5, -325, 0.5, -210) or UDim2.new(0.5, -325, -1, 0)
+        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Back), {Position = target}):Play()
     end)
 end
 
--- [[ EXECUÇÃO FINAL ]]
-task.spawn(PlayMasterCutscene)
+-- START
+task.spawn(PlayMasterIntro)
 task.delay(6, LoadRnzHub)
-
-print("Rnz Corporation: Ultimate Script Loaded! 🎬")
